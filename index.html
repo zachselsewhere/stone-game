@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>My Phaser Game</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=0.5">
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+    </style>
+</head>
+
+<body>
+
+    <script>
+        var config = {
+            type: Phaser.AUTO,
+            width: window.innerWidth,
+            height: window.innerHeight,
+            parent: 'phaser-game',
+            scene: {
+                preload: preload,
+                create: create,
+                update: update
+            }
+        };
+
+        var game = new Phaser.Game(config);
+
+        var gameBoard;
+        var stones = [];
+        var stoneSize;
+        var offsetX;
+        var offsetY;
+        var currentStep = 0;
+        var rotationCounter = 0;
+        var stone4Rotation = 0;
+
+        function preload() {
+            this.load.image('game-board', 'assets/tablet.png');
+            this.load.image('stone1', 'assets/stone1.png');
+            this.load.image('stone2', 'assets/stone2.png');
+            this.load.image('stone3', 'assets/stone3.png');
+            this.load.image('stone4', 'assets/stone4.png');
+            this.load.image('stone5', 'assets/stone5.png');
+            this.load.image('stone6', 'assets/stone6.png');
+            this.load.image('stone7', 'assets/stone7.png');
+            this.load.image('stone8', 'assets/stone8.png');
+        }
+
+        function create() {
+            gameBoard = this.add.image(window.innerWidth / 2, window.innerHeight / 2, 'game-board');
+            var scale = 0.7;
+            gameBoard.setScale(scale);
+            stoneSize = gameBoard.width * 0.07;
+            offsetX = 55;
+            offsetY = 10;
+
+            rotationCounterText = this.add.text(20, 20, 'Rotation Counter: ' + rotationCounter, {
+                font: '24pt Arial',
+                fill: '#ffffff',
+                fontWeight: 'bold'
+            });
+            stone4RotationText = this.add.text(20, 100, 'Stone 4 Rotation: ' + stone4Rotation, {
+                font: '24pt Arial',
+                fill: '#ffffff',
+                fontWeight: 'bold'
+            });
+            currentStepText = this.add.text(20, 180, 'Current Step: ' + currentStep, {
+                font: '24pt Arial',
+                fill: '#ffffff',
+                fontWeight: 'bold'
+            });
+            stones.push(this.add.image(getStoneX(1, 0), getStoneY(0), 'stone1').setDisplaySize(stoneSize, stoneSize).setName('stone1'));
+            stones.push(this.add.image(getStoneX(1, 1), getStoneY(1), 'stone2').setDisplaySize(stoneSize, stoneSize).setName('stone2'));
+            stones.push(this.add.image(getStoneX(1, 2), getStoneY(2), 'stone3').setDisplaySize(stoneSize, stoneSize).setName('stone3'));
+            stones.push(this.add.image(getStoneX(1, 3), getStoneY(3), 'stone4').setDisplaySize(stoneSize, stoneSize).setName('stone4'));
+            stones.push(this.add.image(getStoneX(0, 0), getStoneY(0), 'stone5').setDisplaySize(stoneSize, stoneSize).setName('stone5'));
+            stones.push(this.add.image(getStoneX(0, 1), getStoneY(1), 'stone6').setDisplaySize(stoneSize, stoneSize).setName('stone6'));
+            stones.push(this.add.image(getStoneX(0, 2), getStoneY(2), 'stone7').setDisplaySize(stoneSize, stoneSize).setName('stone7'));
+            stones.push(this.add.image(getStoneX(0, 3), getStoneY(3), 'stone8').setDisplaySize(stoneSize, stoneSize).setName('stone8'));
+
+
+            for (var i = 0; i < stones.length; i++) {
+                var arrowLeft = this.add.text(stones[i].x - 0.6 * stoneSize, stones[i].y - 0.1 * stoneSize, '<');
+                arrowLeft.setInteractive();
+                arrowLeft.on('pointerdown', function () {
+                    this.rotation -= Math.PI / 4;
+                    rotationCounter++;
+                    checkTotalRotation();
+                }, stones[i]);
+
+                var arrowRight = this.add.text(stones[i].x + 0.5 * stoneSize, stones[i].y - 0.1 * stoneSize, '>');
+                arrowRight.setInteractive();
+                arrowRight.on('pointerdown', function () {
+                    this.rotation += Math.PI / 4;
+                    rotationCounter++;
+                    checkTotalRotation();
+                }, stones[i]);
+            }
+        }
+
+        function update() {
+            var stone1 = stones.find(stone => stone.name === 'stone1');
+            var stone2 = stones.find(stone => stone.name === 'stone2');
+            var stone3 = stones.find(stone => stone.name === 'stone3');
+            var stone4 = stones.find(stone => stone.name === 'stone4');
+            var stone5 = stones.find(stone => stone.name === 'stone5');
+            var stone6 = stones.find(stone => stone.name === 'stone6');
+            var stone7 = stones.find(stone => stone.name === 'stone7');
+            var stone8 = stones.find(stone => stone.name === 'stone8');
+            var stone4Rotation = stone4.rotation;
+            stone4RotationText.setText('Stone 4 Rotation: ' + stone4Rotation);
+            currentStepText.setText('Current Step: ' + currentStep)
+
+            // if the player has made a mistake, reset all the stones and restart the game
+            if (currentStep === 1 && stone1.rotation !== 1.5707963267948983) {
+                resetStones();
+            }
+
+            if (currentStep === 2 && (currentStep < 2 || stone1.rotation !== 1.5707963267948983 || stone7.rotation !== -3.1415926535897905)) {
+                resetStones();
+            }
+
+            if (currentStep === 3 && (currentStep < 3 || stone1.rotation !== 1.5707963267948983 || stone7.rotation !== -3.1415926535897905 || stone6.rotation !== 1.5707963267948948)) {
+                resetStones();
+            }
+
+            if (currentStep === 4 && (currentStep < 4 || stone1.rotation !== 1.5707963267948983 || stone7.rotation !== -3.1415926535897905 || stone6.rotation !== 1.5707963267948948 || stone2.rotation !== -2.3561944901923457)) {
+                resetStones();
+            }
+
+            if (currentStep === 5 && (currentStep < 5 || stone1.rotation !== 1.5707963267948983 || stone7.rotation !== -3.1415926535897905 || stone6.rotation !== 1.5707963267948948 || stone2.rotation !== -2.3561944901923457 || stone4.rotation !== 1.5707963267948983)) {
+                resetStones();
+            }
+
+            if (currentStep === 6 && (currentStep < 6 || stone1.rotation !== 1.5707963267948983 || stone7.rotation !== -3.1415926535897905 || stone6.rotation !== 1.5707963267948948 || stone2.rotation !== -2.3561944901923457 || stone4.rotation !== 3.1415926535897922)) {
+                resetStones();
+            } else if (currentStep === 6 && stone4.rotation.toFixed(2) === Math.PI.toFixed(2)) {
+                alert('You Win')
+                currentStep = 7;
+            }
+
+        }
+        function getStoneX(xIndex, yIndex) {
+            return gameBoard.x - stoneSize * 0.5 + stoneSize * xIndex + offsetX * xIndex;
+        }
+
+        function getStoneY(yIndex) {
+            return gameBoard.y - stoneSize + stoneSize * yIndex + offsetY * yIndex;
+        }
+
+        function resetStones() {
+            for (var i = 0; i < stones.length; i++) {
+                stones[i].rotation = 0;
+            }
+            currentStep = 0;
+            rotationCounter = 0;
+        }
+
+        function checkTotalRotation() {
+            rotationCounterText.setText('Rotation Counter: ' + rotationCounter)
+            if (rotationCounter == 2) {
+                currentStep = 1; //horseman-stone1
+            } else if (rotationCounter == 6) {
+                currentStep = 2;//moon-stone7
+            } else if (rotationCounter == 12) {
+                currentStep = 3;//ship-stone6
+            } else if (rotationCounter == 15) {
+                currentStep = 4;//eagle-stone2
+            } else if (rotationCounter == 17) {
+                currentStep = 5;//dog-stone4
+            } else if (rotationCounter == 18) {
+                currentStep = 5.5;
+            } else if (rotationCounter == 23) {
+                currentStep = 6;//dog-stone4
+            } else if (rotationCounter == 24) {
+                currentStep = 7;
+            } else (update())
+        }
+    </script>
+</body>
+
+</html>

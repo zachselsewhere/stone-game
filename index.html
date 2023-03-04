@@ -61,21 +61,21 @@
             offsetX = 55;
             offsetY = 10;
 
-            rotationCounterText = this.add.text(20, 20, 'Rotation Counter: ' + rotationCounter, {
-                font: '24pt Arial',
-                fill: '#ffffff',
-                fontWeight: 'bold'
-            });
-            stone4RotationText = this.add.text(20, 100, 'Stone 4 Rotation: ' + stone4Rotation, {
-                font: '24pt Arial',
-                fill: '#ffffff',
-                fontWeight: 'bold'
-            });
-            currentStepText = this.add.text(20, 180, 'Current Step: ' + currentStep, {
-                font: '24pt Arial',
-                fill: '#ffffff',
-                fontWeight: 'bold'
-            });
+            //rotationCounterText = this.add.text(20, 20, 'Rotation Counter: ' + rotationCounter, {
+            //    font: '24pt Arial',
+            //    fill: '#ffffff',
+            //    fontWeight: 'bold'
+            //});
+            //stone4RotationText = this.add.text(20, 100, 'Stone 4 Rotation: ' + stone4Rotation, {
+            //    font: '24pt Arial',
+            //    fill: '#ffffff',
+            //    fontWeight: 'bold'
+            //});
+            //currentStepText = this.add.text(20, 180, 'Current Step: ' + currentStep, {
+            //    font: '24pt Arial',
+            //    fill: '#ffffff',
+            //    fontWeight: 'bold'
+            //});
             stones.push(this.add.image(getStoneX(1, 0), getStoneY(0), 'stone1').setDisplaySize(stoneSize, stoneSize).setName('stone1'));
             stones.push(this.add.image(getStoneX(1, 1), getStoneY(1), 'stone2').setDisplaySize(stoneSize, stoneSize).setName('stone2'));
             stones.push(this.add.image(getStoneX(1, 2), getStoneY(2), 'stone3').setDisplaySize(stoneSize, stoneSize).setName('stone3'));
@@ -115,8 +115,8 @@
             var stone7 = stones.find(stone => stone.name === 'stone7');
             var stone8 = stones.find(stone => stone.name === 'stone8');
             var stone4Rotation = stone4.rotation;
-            stone4RotationText.setText('Stone 4 Rotation: ' + stone4Rotation);
-            currentStepText.setText('Current Step: ' + currentStep)
+            //stone4RotationText.setText('Stone 4 Rotation: ' + stone4Rotation);
+            //currentStepText.setText('Current Step: ' + currentStep)
 
             // if the player has made a mistake, reset all the stones and restart the game
             if (currentStep === 1 && stone1.rotation !== 1.5707963267948983) {
@@ -164,7 +164,7 @@
         }
 
         function checkTotalRotation() {
-            rotationCounterText.setText('Rotation Counter: ' + rotationCounter)
+            //rotationCounterText.setText('Rotation Counter: ' + rotationCounter)
             if (rotationCounter == 2) {
                 currentStep = 1; //horseman-stone1
             } else if (rotationCounter == 6) {
